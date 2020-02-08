@@ -22,14 +22,14 @@ class DLL:
         self.head = None
         self.tail = None
 
-    def length(self):
+    def __len__(self):
         """ Returns the number of nodes in the list. """
         return self.size
 
     def push(self, val):
         """ Adds a node with value equal to val to the front of the list. """
         # Create a new node
-        node = Node(val=val, nxt=self.head)
+        node = DLL.Node(val=val, nxt=self.head)
 
         # If there is a node in the list
         if self.head:
@@ -46,7 +46,7 @@ class DLL:
     def insert_after(self, prev_node, val):
         """ Adds a node with value equal to val in the list after prev_node. """
         # Create the new node and insert it into the list
-        n = Node(val=val, nxt=prev_node.next, prev=prev_node)
+        n = DLL.Node(val=val, nxt=prev_node.next, prev=prev_node)
         
         # Update the chain's pointers
         if prev_node == self.tail:
@@ -84,12 +84,80 @@ class DLL:
             raise IndexError("list index out of range")
         elif i < self.size / 2:
             # If the index is in the front half of the list, just count up to it
-            n = self.firstNode
+            n = self.head
             for j in range(i): n = n.next
         else:
             # If the index if the the second half of the list, count backwards to
             # reduce unnecessary steps
-            n = self.lastNode
+            n = self.tail
             for j in range(self.size - i - 1): n = n.prev
         
-        return n
+        return np
+
+class Queue:
+    """
+    A doubly-linked list-backed queue implementation.
+    """
+
+    def __init__(self):
+        self.internal = DLL()
+        self.mval = None
+        self.mins = []
+
+    def __len__(self):
+        return len(self.internal)
+
+    def enqueue(self, val):
+        self.internal.push(val)
+        self.mins.append(self.mval)
+
+        # keep track of the queue minimum
+        if not self.mval or val < self.mval:
+            self.mval = val
+
+    def dequeue(self):
+        oldest = self.internal.tail
+        self.internal.delete(oldest)
+        
+        self.mval = self.mins.pop()
+
+        return oldest.val
+
+    def find_min(self):
+        return self.mval
+
+
+##
+## TESTING
+##
+
+def test_queue_enqueue():
+    queue = Queue()
+    queue.enqueue(40)
+    queue.enqueue(41)
+    queue.enqueue(39)
+    queue.enqueue(38)
+    queue.enqueue(42)
+
+    assert len(queue) == 5
+    assert queue.find_min() == 38
+
+def test_queue_dequeue():
+    queue = Queue()
+    queue.enqueue(40)
+    queue.enqueue(41)
+    queue.enqueue(39)
+    queue.enqueue(38)
+    queue.enqueue(42)
+    queue.dequeue()
+    queue.dequeue()
+
+    assert len(queue) == 3
+    assert queue.find_min() == 39
+
+    queue.dequeue()
+
+    assert queue.find_min() == 40
+    queue.dequeue()
+    assert queue.find_min() == 40
+
