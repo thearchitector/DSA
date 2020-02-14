@@ -100,15 +100,20 @@ class Queue:
     """
 
     def __init__(self):
+        """ Initializes the queue using an internal doubly-linked list and list of minimum values. """
         self.internal = DLL()
         self.mval = None
         self.mins = []
 
     def __len__(self):
+        """ Override Python's default len() operation to return a valid result. """
         return len(self.internal)
 
     def enqueue(self, val):
+        """ Pushes the given element onto the beginning of the queue. """
+        # dispatch the push operation to the dll
         self.internal.push(val)
+        # add the current minimum value to a rolling list of mins
         self.mins.append(self.mval)
 
         # keep track of the queue minimum
@@ -116,14 +121,19 @@ class Queue:
             self.mval = val
 
     def dequeue(self):
+        """ Removes the last element from the queue in the order of enqueueing. """
         oldest = self.internal.tail
         self.internal.delete(oldest)
         
+        # the new minimum value is the minimum recorded at the time that the current element was added
+        # because repeats are allowed, this allows the queue to keep track of the minimum even if
+        # added in unsorted order
         self.mval = self.mins.pop()
 
         return oldest.val
 
     def find_min(self):
+        """ Returns the minimum value of the queue. """
         return self.mval
 
 
@@ -131,7 +141,9 @@ class Queue:
 ## TESTING
 ##
 
+
 def test_queue_enqueue():
+    """ Performs several enqueue operations and asserts runtime conditions. """
     queue = Queue()
     queue.enqueue(40)
     queue.enqueue(41)
@@ -142,7 +154,8 @@ def test_queue_enqueue():
     assert len(queue) == 5
     assert queue.find_min() == 38
 
-def test_queue_dequeue():
+def test_queue_dequeue_fmin():
+    """ Tests the functionality of the dequeue operation in conjunction with find_min function. """
     queue = Queue()
     queue.enqueue(40)
     queue.enqueue(41)
