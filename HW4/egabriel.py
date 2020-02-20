@@ -111,7 +111,8 @@ def draw_weighted():
     # generate all the random distributions
     ps = np.random.random(100)
     hs = np.random.randn(100, 100)
-    asize = ahapp = 0
+    asize = 0
+    ahapp = 0
 
     for i, p in enumerate(ps):
         # conditionally adjust our distribution mu and sigma values

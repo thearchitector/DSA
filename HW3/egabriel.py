@@ -113,28 +113,34 @@ class Queue:
         """ Pushes the given element onto the beginning of the queue. """
         # dispatch the push operation to the dll
         self.internal.push(val)
-        # add the current minimum value to a rolling list of mins
-        self.mins.append(self.mval)
+        i = -1
 
-        # keep track of the queue minimum
-        if not self.mval or val < self.mval:
-            self.mval = val
+        for i in range(len(self.mins) - 1, -1, -1):
+            if val >= self.mins[i]:
+                break
+
+        # prune the minimum list
+        if i != -1: del self.mins[i:]
+
+        # add the new minimum to the list
+        self.mins.append(val)
+
+        print(self.mins)
 
     def dequeue(self):
         """ Removes the last element from the queue in the order of enqueueing. """
         oldest = self.internal.tail
         self.internal.delete(oldest)
         
-        # the new minimum value is the minimum recorded at the time that the current element was added
-        # because repeats are allowed, this allows the queue to keep track of the minimum even if
-        # added in unsorted order
-        self.mval = self.mins.pop()
+        # update the minimum list if necessary
+        if oldest.val == self.mins[-1]:
+            self.mins.pop()
 
         return oldest.val
 
     def find_min(self):
         """ Returns the minimum value of the queue. """
-        return self.mval
+        return self.mins[0]
 
 
 ##
@@ -145,32 +151,31 @@ class Queue:
 def test_queue_enqueue():
     """ Performs several enqueue operations and asserts runtime conditions. """
     queue = Queue()
-    queue.enqueue(40)
-    queue.enqueue(41)
-    queue.enqueue(39)
-    queue.enqueue(38)
-    queue.enqueue(42)
+    queue.enqueue(0)
+    queue.enqueue(1)
+    queue.enqueue(-2)
+    queue.enqueue(0)
+    queue.enqueue(-2)
 
     assert len(queue) == 5
-    assert queue.find_min() == 38
+    assert queue.find_min() == -2
 
 def test_queue_dequeue_fmin():
     """ Tests the functionality of the dequeue operation in conjunction with find_min function. """
     queue = Queue()
-    queue.enqueue(40)
-    queue.enqueue(41)
-    queue.enqueue(39)
-    queue.enqueue(38)
-    queue.enqueue(42)
+    queue.enqueue(0)
+    queue.enqueue(1)
+    queue.enqueue(-2)
+    queue.enqueue(0)
+    queue.enqueue(-2)
     queue.dequeue()
     queue.dequeue()
 
     assert len(queue) == 3
-    assert queue.find_min() == 39
+    assert queue.find_min() == -2
 
     queue.dequeue()
 
-    assert queue.find_min() == 40
+    assert queue.find_min() == -2
     queue.dequeue()
-    assert queue.find_min() == 40
-
+    assert queue.find_min() == -2
