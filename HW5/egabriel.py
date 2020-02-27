@@ -113,7 +113,7 @@ class Heap:
 			# iteratively remove the minimum element and add it to a list
 			for n in range(length):
 				i = length - 1 - n if reverse else n
-				slist[n] = h.delete_min()
+				slist[i] = h.delete_min()
 
 			return slist
 		
@@ -174,5 +174,5 @@ def test_heapsort(l):
 	
 	h2 = Heap(l, inplace=False)
 	# compare the reversed sorted list and heap
-	lsorted2 = sorted(l, reverse=False)
+	lsorted2 = sorted(l, reverse=True)
 	assert lsorted2 == h2.to_sorted(reverse=True)
